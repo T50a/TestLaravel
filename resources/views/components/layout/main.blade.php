@@ -1,6 +1,6 @@
 @props(['title', 'h1' => null])
 
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,8 +12,14 @@
 </head>
 
 <body>
+    @if(session('notification'))
+        <div class="alert alert-success">
+            {{ session('notification') }}
+        </div>
+    @endif
+
     {{ $slot }}
-    @vite(['resources/js/app.js'])
+@vite(['resources/js/app.js'])
 </body>
 
 </html>

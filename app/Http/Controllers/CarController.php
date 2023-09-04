@@ -9,48 +9,63 @@ class CarController extends Controller
 {
     public function index()
     {
-        $cars = Car::all();
+        $cars = Car::orderByDesc('created_at')->get();
 
-        return view('car.index', compact('cars'));
+        return view('cars.index', compact('cars'));
     }
 
     public function create()
     {
-        return view('car.create');
+        $color = config('app-cars.color');
+
+        return view('cars.create', compact('color'));
     }
 
     public function store(CarRequest $request)
     {
         $car = Car::create($request->validated());
-        return redirect("/cars/{$car->id}");
+
+        return redirect()->route('cars.show', [$car->id])->with('notification', config('notifications.cars.create'));
     }
 
-    public function show(string $id)
+    public function show(Car $car)
     {
-        $car = Car::findOrFail($id);
-
-        return view('car.show', compact('car'));
+        return view('cars.show', compact('car'));
     }
 
-    public function edit(string $id)
+    public function edit(Car $car)
     {
-        $car = Car::findOrFail($id);
+        $color = config('app-cars.color');
 
-        return view('car.edit', compact('car'));
+        return view('cars.edit', compact('car', 'color'));
+
     }
 
-    public function update(CarRequest $request, string $id)
+    public function update(CarRequest $request, Car $car)
     {
-        $car = Car::findOrFail($id);
         $car->update($request->validated());
-        return view('car.show', compact('car'));
+
+        return redirect()->route('cars.show', compact('car'))->with('notification', config('notifications.cars.update'));
     }
 
-    public function destroy(string $id)
+    public function destroy(Car $car)
     {
-        $car = Car::findOrFail($id);
         $car->delete();
 
-        return redirect()->route('cars.index')->with('success', 'Car deleted successfully');
+        return redirect()->route('cars.index')->with('notification', config('notifications.cars.destroy'));
+    }
+
+    public function trash()
+    {
+        $cars = Car::onlyTrashed()->orderByDesc('created_at')->get();
+
+        return view('cars.trash', compact('cars'));
+    }
+
+    public function restore(string $id) {
+        $car = Car::onlyTrashed()->findOrFail($id);
+        $car->restore();
+
+        return redirect()->route('cars.index')->with('notification', config('notifications.cars.restore'));
     }
 }

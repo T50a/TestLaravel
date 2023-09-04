@@ -1,7 +1,7 @@
 <x-layout.main title="Create Post">
     <h1>Create new post</h1>
     <hr>
-    <form method="post" action="/posts">
+    <x-form method="post" action="{{ route('posts.store') }}">
         @csrf
         <div>
             Title: <input name="title" value="{{ old('title') }}">
@@ -16,7 +16,7 @@
         </div><br>
         <hr>
         <button>Create</button>
-    </form>
+    </x-form>
     <hr>
     <a href="/posts">Back</a>
 </x-layout.main>
